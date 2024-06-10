@@ -91,6 +91,22 @@ class AssistantManager:
             AssistantManager.assistant_id = assistant_obj.id
             self.assistant = assistant_obj
             print(f"AssisID:::: {self.assistant.id}")
+            
+    def create_thread(self):
+        if not self.thread:
+            thread_obj = self.client.beta.threads.create()
+            AssistantManager.thread_id = thread_obj.id
+            self.thread = thread_obj
+            print(f"ThreadID::: {self.thread.id}")
+
+    def add_message_to_thread(self, role, content):
+        if self.thread:
+            self.client.beta.threads.messages.create(
+                thread_id=self.thread.id, role=role, content=content
+            )
+
+
+
 
         
 
