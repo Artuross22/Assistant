@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import openai
 import requests
 import json
+import streamlit as st
 
 load_dotenv()
 
@@ -55,10 +56,6 @@ def get_news(topic):
     except requests.exceptions.RequestException as e:
         print("Error occured during API Request", e)
 
-def main():
-
-    news = get_news("bitcoin")
-    print(news)
 
 class AssistantManager:
     thread_id = None
@@ -149,7 +146,9 @@ class AssistantManager:
 
         print("Submitting outputs back to the Assistant...")
         self.client.beta.threads.runs.submit_tool_outputs(
-            thread_id=self.thread.id, run_id=self.run.id, tool_outputs=tool_outputs
+            thread_id=self.thread.id, 
+            run_id=self.run.id,   
+            tool_outputs=tool_outputs
         )
 
     def get_summary(self):
@@ -173,12 +172,23 @@ class AssistantManager:
                         required_actions=run_status.required_action.submit_tool_outputs.model_dump()
                     )
 
+    def run_steps(self):
+        run_steps = self.client.beta.threads.runs.steps.list(
+            thread_id=self.thread.id, run_id=self.run.id
+        )
+        print(f"Run-Steps::: {run_steps}")
+        return run_steps.data
+
+def main():
+    # news = get_news("bitcoin")
+    # print(news[0])
+
+    manager = AssistantManager()
+
+    # Streamlit interface
+    st.title("News Summarizer")
 
 
-
-
-
-        
 
 if __name__ == "__main__":
     main()
